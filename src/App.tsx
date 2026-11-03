@@ -26,17 +26,27 @@ function App(){
     }
   };
 
+  const handlePageClick = (pageId: string) => {
+    const pages = ["yt-page", "tt-page", "ig-page"];
+    pages.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.style.zIndex = id === pageId ? "1" : "auto";
+      }
+    });
+  };
+
   return (
     <div className="app-yt">
 
       <nav>
-        <div id="yt-page" className="page">
+        <div id="yt-page" className="page" onClick={() => handlePageClick("yt-page")}>
           <img src="" alt="YT" />
         </div>
-        <div id="tt-page" className="page">
+        <div id="tt-page" className="page" onClick={() => handlePageClick("tt-page")}>
           <img src="" alt="TikTok" />
         </div>
-        <div id="ig-page" className="page">
+        <div id="ig-page" className="page" onClick={() => handlePageClick("ig-page")}>
           <img src="" alt="Instagram" />
         </div>
       </nav>

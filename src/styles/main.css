@@ -28,7 +28,17 @@ nav{
 }
 
 .page:hover{
-    background-color: oklch(27.4% 0.006 286.033);
+    background-color: oklch(35.035% 0.00863 285.886);
+}
+
+#yt-page{
+    z-index: 1;
+}
+#tt-page{
+    z-index: auto;
+}
+#ig-page{
+    z-index: auto;
 }
 
 .app-yt{
