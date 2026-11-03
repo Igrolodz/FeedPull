@@ -13,10 +13,29 @@ function App(){
       setLogs((prev) => [...prev, event.payload]);
       console.log(event.payload);
 
+      const data: { status: string; percent: string; speed: string; eta: string } = JSON.parse(event.payload);
+
       const progressBarText = document.getElementById("progress-bar-text");
       if(progressBarText){
-         progressBarText.style.opacity = parseInt(event.payload) >= 10 ? "1" : "0";
+         progressBarText.style.opacity = parseInt(data.percent) >= 10 ? "1" : "0";
       }
+      
+      const logger = document.getElementById("logger");
+      if (logger && data.status === "finished") {
+        logger.textContent = "Download Completed!";
+      }
+      else if (logger && data.status === "downloading") {
+        logger.textContent = `Speed: ${data.speed}MB/s - ETA: `;
+
+        if(data.eta && parseInt(data.eta) >= 60){
+          const minutes = Math.floor(parseInt(data.eta) / 60);
+          const seconds = parseInt(data.eta) % 60;
+          logger.textContent += `${minutes}m ${seconds}s`;
+        } else if (data.eta) {
+          logger.textContent += `${data.eta}s`;
+        }
+      }
+
     });
     return () => {
       unlisten.then((f) => f());
@@ -69,14 +88,15 @@ function App(){
             placeholder="Paste YouTube link here..."
           />
 
-          <button className="download-button" onClick={handleDownload}>Download</button>
+          <button className="download-button" onClick={handleDownload} type="button">Download</button>
         </form>
 
+        <span id="logger"></span>
         <div className="progress">
           <div className="progress-bar"
-          style={{ width: logs.length ? `${parseInt(logs[logs.length - 1])}%` : "0%" }}
+          style={{ width: logs.length ? `${JSON.parse(logs[logs.length - 1]).percent}%` : "0%" }}
           >
-            <span id="progress-bar-text">{logs.length ? `${parseInt(logs[logs.length - 1])}%` : "0%"}</span>
+            <span id="progress-bar-text">{logs.length ? `${JSON.parse(logs[logs.length - 1]).percent}%` : "0%"}</span>
           </div>
         </div>
       </main>

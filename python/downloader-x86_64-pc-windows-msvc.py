@@ -1,3 +1,4 @@
+import json
 import sys
 import yt_dlp
 from pathlib import Path
@@ -5,8 +6,28 @@ from pathlib import Path
 def progress_hook(d):
     if d['status'] == 'downloading':
         total = d.get('total_bytes') or d.get('total_bytes_estimate')
+        percent_str = "0"
         if total:
-            print(round(d.get('downloaded_bytes', 0) * 100 / total), flush=True)
+            percent_str = round(d.get('downloaded_bytes', 0) * 100 / total)
+        speed = d.get('speed')
+        speed_str = round(speed / 1_000_000, 1) if speed is not None else None
+        eta_str = d.get('eta')
+        
+        payload = {
+            "status": d['status'],
+            "percent": percent_str,
+            "speed": speed_str,
+            "eta": eta_str
+        }
+        print(json.dumps(payload), flush=True)
+    if d['status'] == 'finished':
+        payload = {
+            "status": d['status'],
+            "percent": "100",
+            "speed": None,
+            "eta": None
+        }
+        print(json.dumps(payload), flush=True)
 
 downloads_path = str(Path.home() / "Downloads")
 
