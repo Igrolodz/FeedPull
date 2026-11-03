@@ -14,7 +14,11 @@
       {
         "title": "FeedPull",
         "width": 800,
-        "height": 600,
+        "height": 900,
+        "maxWidth": 1200,
+        "maxHeight": 1400,
+        "minWidth": 700,
+        "minHeight": 700,
         "decorations": false
       }
     ],
