@@ -11,6 +11,12 @@ function App(){
   useEffect(() => {
     const unlisten = listen<string>("download-log", (event) => {
       setLogs((prev) => [...prev, event.payload]);
+      console.log(event.payload);
+
+      const progressBarText = document.getElementById("progress-bar-text");
+      if(progressBarText){
+         progressBarText.style.opacity = parseInt(event.payload) >= 10 ? "1" : "0";
+      }
     });
     return () => {
       unlisten.then((f) => f());
@@ -67,11 +73,10 @@ function App(){
         </form>
 
         <div className="progress">
-          <p>{logs[logs.length - 1]}</p>
           <div className="progress-bar"
           style={{ width: logs.length ? `${parseInt(logs[logs.length - 1])}%` : "0%" }}
           >
-            <span>{logs.length ? `${parseInt(logs[logs.length - 1])}%` : "0%"}</span>
+            <span id="progress-bar-text">{logs.length ? `${parseInt(logs[logs.length - 1])}%` : "0%"}</span>
           </div>
         </div>
       </main>
