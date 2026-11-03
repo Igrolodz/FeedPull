@@ -1,0 +1,48 @@
+.titlebar {
+    height: 30px;
+    background: oklch(37% 0.013 285.805);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+}
+
+.titlebar-title {
+    padding-left: 12px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.titlebar-controls{
+    display: flex;
+    height: 100%;
+}
+
+.titlebar-button{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 46px;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: #abebab;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.titlebar-button:hover{
+    background-color: #35363c;
+    color: #fff;
+}
+
+.titlebar-button.close:hover{
+    background-color: #e81123;
+    color: #fff;
+}
