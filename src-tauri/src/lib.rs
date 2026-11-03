@@ -11,7 +11,7 @@ fn greet(name: &str) -> String {
 async fn download_video(app: tauri::AppHandle, url: String) -> Result<String, String> {
     
     let sidecar = app.shell()
-    .sidecar("yt-dlp")
+    .sidecar("downloader")
     .map_err(|e| e.to_string())?
     .args([&url]);
 
