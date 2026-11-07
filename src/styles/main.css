@@ -12,6 +12,9 @@ body{
     margin: 0;
     padding: 0;
     background-color: oklch(27.4% 0.006 286.033);
+    background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+    background-size: 24px 24px;
+    animation: backgroundAnimation 5s linear infinite;
 }
 
 nav{
@@ -187,4 +190,13 @@ form{
 }
 #video-format{
     border-radius: 0px 10px 10px 0px;
+}
+
+@keyframes backgroundAnimation {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 0px 24px;
+    }
 }
