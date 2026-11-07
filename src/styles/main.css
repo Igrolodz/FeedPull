@@ -34,6 +34,8 @@ nav{
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background-color 0.3s ease;
+    border-width: 1px 1px 0 1px !important;
 }
 
 .page:hover{
@@ -42,12 +44,18 @@ nav{
 
 #yt-page{
     z-index: 1;
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease;
 }
 #tt-page{
     z-index: auto;
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease;
 }
 #ig-page{
     z-index: auto;
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease;
 }
 
 svg{

@@ -63,6 +63,7 @@ function App(){
       const element = document.getElementById(page.id);
       if (element) {
         element.style.zIndex = page.id === pageId ? "1" : "auto";
+        element.style.border = page.id === pageId ? "1px solid #F472B6" : "";
       }
     });
 
@@ -71,6 +72,10 @@ function App(){
       setPlatform(selected.platform);
     }
   };
+
+  useEffect(() => {
+    handlePageClick("yt-page");
+  }, []);
 
   const formatClick = (format: string) => {
     const audioButton = document.getElementById("audio-format");
