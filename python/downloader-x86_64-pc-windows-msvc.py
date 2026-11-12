@@ -31,12 +31,19 @@ def progress_hook(d):
 
 downloads_path = str(Path.home() / "Downloads")
 
-def download(url, quality):
-    format_string = ""
-    if not quality:
-        format_string = f"bestvideo+bestaudio"
+def download(url, quality, format):
+    format_string = "" 
+    global output
+    output = "mp4"
+    
+    if format == "video":
+        if not quality:
+            format_string = f"bestvideo+bestaudio"
+        else:
+            format_string = f"bestvideo[height={quality}]+bestaudio"
     else:
-        format_string = f"bestvideo[height={quality}]+bestaudio"
+        format_string = "bestaudio"
+        output = "mp3"
     
     ydl_opts = {
         "outtmpl": f"{downloads_path}/%(title)s.%(ext)s",
@@ -44,7 +51,11 @@ def download(url, quality):
         "noprogress": True,
         "progress_hooks": [progress_hook],
         "format": format_string,
-        "merge_output_format": "mp4"
+        "merge_output_format": output,
+        "postprocessors": [{
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": output,
+        }] if output == "mp3" else ""
     }
     
     try:
@@ -61,7 +72,9 @@ if __name__ == "__main__":
         
     target_url = sys.argv[1]
     quality = sys.argv[2] if len(sys.argv) > 2 else ""
+    format = sys.argv[3] if len(sys.argv) > 3 else ""
     # target_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    # quality = ""
+    # quality = "720"
+    # format = "video"
     
-    download(target_url, quality)
+    download(target_url, quality, format)
