@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import "./styles/main.css";
@@ -10,6 +10,7 @@ function App(){
   const [platform, setPlatform] = useState("YouTube");
   const [quality, setQuality] = useState("");
   const [format, setFormat] = useState("video");
+  const formatRef = useRef(format); 
 
   useEffect(() => {
     const unlisten = listen<string>("download-log", (event) => {
@@ -47,7 +48,7 @@ function App(){
 
   const handleDownload = async () => {
     try {
-      const response = await invoke("download_video", { url, quality });
+      const response = await invoke("download_video", { url, quality, format });
       console.log(response);
     } catch (error) {
       console.error("Failed to start download:", error);
@@ -81,10 +82,12 @@ function App(){
 
   const formatClick = (format: string) => {
     setFormat(format);
+    formatRef.current = format;
 
     const audioButton = document.getElementById("audio-format");
     const videoButton = document.getElementById("video-format");
     const qualityWrapper = document.getElementById("quality-wrapper");
+    const input = document.getElementById("url-input");
 
     if (audioButton && videoButton) {
       if (format === "audio") {
@@ -97,7 +100,7 @@ function App(){
       } else {
         videoButton.style.border = "3px solid #F472B6";
         audioButton.style.border = "";
-        if (qualityWrapper && qualityWrapper.innerHTML != "") {
+        if (qualityWrapper && qualityWrapper.innerHTML != "" && input && (input as HTMLInputElement).value != "") {
           qualityWrapper.style.height = "3em";
           qualityWrapper.style.padding = "0.2em";
         }
@@ -157,16 +160,24 @@ function App(){
       });
 
       const input = document.querySelector("#url-input");
-      if (format == "video" && qualityWrapper && qualityWrapper.innerHTML != "" && (input as HTMLInputElement).value != "") {
+      if (formatRef.current == "video" && qualityWrapper && qualityWrapper.innerHTML != "" && (input as HTMLInputElement).value != "") {
         qualityWrapper.style.height = "3em";
         qualityWrapper.style.padding = "0.2em";
         formatClick("video");
       }
     } catch (error) {
       console.error("bro pasted invalid link, I suppose:", error);
+      const qualityWrapper = document.getElementById("quality-wrapper");
+      if (qualityWrapper) {
+        qualityWrapper.style.height = "0";
+        qualityWrapper.style.padding = "0";
+      }
     }
     
   }
+  useEffect(() => {
+    console.log('Current state value:', format);
+  }, [format]);
 
   return (
     <div className="app-yt">
