@@ -1,6 +1,6 @@
 import json
 import sys
-import yt_dlp
+import yt_dlp # type: ignore
 from pathlib import Path
 
 def progress_hook(d):
