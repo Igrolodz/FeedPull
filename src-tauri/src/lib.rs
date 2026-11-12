@@ -1,15 +1,8 @@
 use tauri_plugin_shell::ShellExt;
 use tauri::Emitter;
 
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 #[tauri::command]
 async fn download_video(app: tauri::AppHandle, url: String) -> Result<String, String> {
-    
     let sidecar = app.shell()
     .sidecar("downloader")
     .map_err(|e| e.to_string())?
@@ -34,7 +27,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet, download_video])
+        .invoke_handler(tauri::generate_handler![download_video])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
