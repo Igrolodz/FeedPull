@@ -22,12 +22,32 @@ async fn download_video(app: tauri::AppHandle, url: String) -> Result<String, St
     Ok(format!("Download started for URL: {}", url))
 }
 
+#[tauri::command]
+async fn extract_metadata(app: tauri::AppHandle, url: String) -> Result<String, String> {
+    let sidecar = app.shell()
+        .sidecar("extractor")
+        .map_err(|e| e.to_string())?
+        .args([&url]);
+
+    let output = sidecar
+        .output()
+        .await
+        .map_err(|e| e.to_string())?;
+    
+    
+    if output.status.success() == false {
+        return Err(String::from_utf8_lossy(&output.stderr).to_string());
+    }
+    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+}
+
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![download_video])
+        .invoke_handler(tauri::generate_handler![download_video, extract_metadata])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
