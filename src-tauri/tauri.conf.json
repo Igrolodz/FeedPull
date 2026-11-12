@@ -37,7 +37,8 @@
       "icons/icon.ico"
     ],
     "externalBin": [
-      "binaries/downloader"
+      "binaries/downloader",
+      "binaries/extractor"
     ]
   }
 }
