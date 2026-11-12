@@ -31,12 +31,20 @@ def progress_hook(d):
 
 downloads_path = str(Path.home() / "Downloads")
 
-def download(url):
+def download(url, quality):
+    format_string = ""
+    if not quality:
+        format_string = f"bestvideo+bestaudio"
+    else:
+        format_string = f"bestvideo[height={quality}]+bestaudio"
+    
     ydl_opts = {
         "outtmpl": f"{downloads_path}/%(title)s.%(ext)s",
         "quiet": True,
         "noprogress": True,
-        "progress_hooks": [progress_hook]
+        "progress_hooks": [progress_hook],
+        "format": format_string,
+        "merge_output_format": "mp4"
     }
     
     try:
@@ -52,6 +60,8 @@ if __name__ == "__main__":
         sys.exit(1)
         
     target_url = sys.argv[1]
+    quality = sys.argv[2] if len(sys.argv) > 2 else ""
     # target_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    # quality = ""
     
-    download(target_url)
+    download(target_url, quality)
