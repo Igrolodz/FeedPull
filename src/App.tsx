@@ -8,7 +8,8 @@ function App(){
   const [url, setUrl] = useState("");
   const [logs, setLogs] = useState<string[]>([]);
   const [platform, setPlatform] = useState("YouTube");
-  const [quality, setQuality] = useState("1080p");
+  const [quality, setQuality] = useState("");
+  const [format, setFormat] = useState("video");
 
   useEffect(() => {
     const unlisten = listen<string>("download-log", (event) => {
@@ -46,7 +47,7 @@ function App(){
 
   const handleDownload = async () => {
     try {
-      const response = await invoke("download_video", { url });
+      const response = await invoke("download_video", { url, quality });
       console.log(response);
     } catch (error) {
       console.error("Failed to start download:", error);
@@ -79,20 +80,32 @@ function App(){
   }, []);
 
   const formatClick = (format: string) => {
+    setFormat(format);
+
     const audioButton = document.getElementById("audio-format");
     const videoButton = document.getElementById("video-format");
+    const qualityWrapper = document.getElementById("quality-wrapper");
+
     if (audioButton && videoButton) {
       if (format === "audio") {
         audioButton.style.border = "3px solid #F472B6";
         videoButton.style.border = "";
+        if (qualityWrapper && qualityWrapper.innerHTML != "") {
+          qualityWrapper.style.height = "0";
+          qualityWrapper.style.padding = "0";
+        }
       } else {
         videoButton.style.border = "3px solid #F472B6";
         audioButton.style.border = "";
+        if (qualityWrapper && qualityWrapper.innerHTML != "") {
+          qualityWrapper.style.height = "3em";
+          qualityWrapper.style.padding = "0.2em";
+        }
       }
     }
   };
 
-  const qualityClick = (quality: string) =>{
+  const qualityClick = (quality: string) => {
     setQuality(quality);
     const buttons = document.querySelector("#quality-wrapper")?.children;
     if (buttons) {
@@ -104,6 +117,55 @@ function App(){
     if (selectedButton) {
       selectedButton.style.border = "3px solid #6366F1";
     }
+  }
+
+  const qualityCheck = async (url: string) => {
+    try {
+      setUrl(url);
+      const response = await invoke("extract_metadata", { url });
+      const availableQualities: { unique_height: number[], ratio: string } = JSON.parse(response as string);
+      const heights = availableQualities.unique_height.reverse();
+      const ratio = availableQualities.ratio;
+      console.log("heights: ", heights);
+      console.log("ratio: ", ratio);
+
+      const schema = {
+        "Landscape": {height: [2160, 1440, 1080, 720], quality: ["4K", "1440p", "1080p", "720p"]},
+        "Portrait": {height: [1920, 1280, 1080, 854], quality: ["1080p", "720p", "480p", "360p"]},
+        "Square": {height: [1024, 540, 480, 360], quality: ["1024p", "540p", "480p", "360p"]}
+      }      
+      const qualityWrapper = document.getElementById("quality-wrapper");
+      if (qualityWrapper) {
+        qualityWrapper.innerHTML = "";
+      }
+      
+      const topHeights = heights.slice(0, 4).reverse();
+      console.log("topHeights: ", topHeights);
+      topHeights.forEach(element => {
+        if (qualityWrapper) {
+          const button = document.createElement("button");
+          button.id = element.toString();
+          button.type = "button";
+          button.className = "quality-button";
+
+          const ratioSchema = schema[ratio as keyof typeof schema];
+          const qualityLabel = ratioSchema?.quality[ratioSchema.height.indexOf(element)] || "SD";
+          button.innerText = qualityLabel;
+          button.onclick = () => qualityClick(element.toString());
+          qualityWrapper.appendChild(button);
+        }
+      });
+
+      const input = document.querySelector("#url-input");
+      if (format == "video" && qualityWrapper && qualityWrapper.innerHTML != "" && (input as HTMLInputElement).value != "") {
+        qualityWrapper.style.height = "3em";
+        qualityWrapper.style.padding = "0.2em";
+        formatClick("video");
+      }
+    } catch (error) {
+      console.error("bro pasted invalid link, I suppose:", error);
+    }
+    
   }
 
   return (
@@ -123,13 +185,13 @@ function App(){
       <main className="container">
         <h1 className="title">Pull your videos!</h1>
         
-        <form action="">
+        <form>
           <input
             id="url-input"
             className="url-input"
             type="text"
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={(e) => qualityCheck(e.target.value)}
             placeholder={`Paste ${platform} link here...`}
           />
 
@@ -138,11 +200,7 @@ function App(){
             <button type="button" id="video-format" className="format-button" onClick={() => formatClick("video")}>Video</button>
           </div>
 
-          <div id="quality-wrapper">
-            <button id="720p" type="button" className="quality-button" onClick={() => qualityClick("720p")}>720p</button>
-            <button id="1080p" type="button" className="quality-button" onClick={() => qualityClick("1080p")}>1080p</button>
-            <button id="4K" type="button" className="quality-button" onClick={() => qualityClick("4K")}>4K</button>
-          </div>
+          <div id="quality-wrapper"></div>
 
           <button className="download-button" onClick={handleDownload} type="button">Download</button>
         </form>
