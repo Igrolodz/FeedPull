@@ -8,6 +8,7 @@ function App(){
   const [url, setUrl] = useState("");
   const [logs, setLogs] = useState<string[]>([]);
   const [platform, setPlatform] = useState("YouTube");
+  const [quality, setQuality] = useState("1080p");
 
   useEffect(() => {
     const unlisten = listen<string>("download-log", (event) => {
@@ -91,6 +92,20 @@ function App(){
     }
   };
 
+  const qualityClick = (quality: string) =>{
+    setQuality(quality);
+    const buttons = document.querySelector("#quality-wrapper")?.children;
+    if (buttons) {
+      Array.from(buttons).forEach(button => {
+        (button as HTMLElement).style.border = "";
+      });
+    }
+    const selectedButton = document.getElementById(quality);
+    if (selectedButton) {
+      selectedButton.style.border = "3px solid #6366F1";
+    }
+  }
+
   return (
     <div className="app-yt">
 
@@ -121,6 +136,12 @@ function App(){
           <div className="format-wrapper">
             <button type="button" id="audio-format" className="format-button" onClick={() => formatClick("audio")}>Audio</button>
             <button type="button" id="video-format" className="format-button" onClick={() => formatClick("video")}>Video</button>
+          </div>
+
+          <div id="quality-wrapper">
+            <button id="720p" type="button" className="quality-button" onClick={() => qualityClick("720p")}>720p</button>
+            <button id="1080p" type="button" className="quality-button" onClick={() => qualityClick("1080p")}>1080p</button>
+            <button id="4K" type="button" className="quality-button" onClick={() => qualityClick("4K")}>4K</button>
           </div>
 
           <button className="download-button" onClick={handleDownload} type="button">Download</button>
