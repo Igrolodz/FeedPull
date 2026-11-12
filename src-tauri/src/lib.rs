@@ -2,11 +2,11 @@ use tauri_plugin_shell::ShellExt;
 use tauri::Emitter;
 
 #[tauri::command]
-async fn download_video(app: tauri::AppHandle, url: String, quality: String) -> Result<String, String> {
+async fn download_video(app: tauri::AppHandle, url: String, quality: String, format: String) -> Result<String, String> {
     let sidecar = app.shell()
     .sidecar("downloader")
     .map_err(|e| e.to_string())?
-    .args([&url, &quality]);
+    .args([&url, &quality, &format]);
 
     let (mut rx, _child) = sidecar.spawn().map_err(|e| e.to_string())?;
 
