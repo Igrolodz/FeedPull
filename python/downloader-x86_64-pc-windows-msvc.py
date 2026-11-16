@@ -38,9 +38,9 @@ def download(url, quality, format):
     
     if format == "video":
         if not quality:
-            format_string = f"bestvideo+bestaudio"
+            format_string = ("bestvideo[vcodec^=avc]+bestaudio[ext=m4a]/" "bestvideo+bestaudio")
         else:
-            format_string = f"bestvideo[height={quality}]+bestaudio"
+            format_string = (f"bestvideo[height={quality}][vcodec^=avc]+bestaudio[ext=m4a]/" f"bestvideo[height={quality}]+bestaudio")
     else:
         format_string = "bestaudio"
         output = "mp3"
@@ -55,7 +55,7 @@ def download(url, quality, format):
         "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": output,
-        }] if output == "mp3" else ""
+        }] if output == "mp3" else []
     }
     
     try:
@@ -74,6 +74,7 @@ if __name__ == "__main__":
     quality = sys.argv[2] if len(sys.argv) > 2 else ""
     format = sys.argv[3] if len(sys.argv) > 3 else ""
     # target_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    # target_url = "https://www.youtube.com/watch?v=UbRHOt4EAoY"
     # quality = "720"
     # format = "video"
     
